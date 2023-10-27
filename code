@@ -1,0 +1,34 @@
+import requests
+from bs4 import BeautifulSoup
+import re
+
+def extract_words_from_url(url):
+    # Baixa o conteúdo da página web
+    response = requests.get(url)
+    if response.status_code == 200:
+        # Parse o conteúdo HTML da página
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        # Extrai o texto da página
+        text = soup.get_text()
+
+        # Use expressões regulares para encontrar palavras (todas em minúsculas)
+        words = re.findall(r'\b\w+\b', text.lower())
+
+        # Remova palavras repetidas convertendo a lista em um conjunto e de volta em lista
+        unique_words = list(set(words))
+
+        return unique_words
+    else:
+        print(f"Erro ao acessar a URL: {url}")
+        return []
+
+if __name__ == "__main__":
+    url = input("Digite a URL: ")
+    words = extract_words_from_url(url)
+
+    with open('wordlist.txt', 'w', encoding='utf-8') as file:
+        for word in words:
+            file.write(word + '\n')
+
+    print(f"Wordlist gerada com sucesso. Total de palavras: {len(words)}")
